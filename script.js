@@ -1,5 +1,8 @@
 const cityInput = document.getElementById('cityInput');
 const weatherInfo = document.getElementById('weatherInfo');
+const forecast = document.getElementById('forecast');
+
+const cities = ['London', 'New York', 'Paris', 'Tokyo', 'Sydney', 'Moscow', 'Berlin', 'Rome', 'Madrid', 'Beijing', 'Toronto', 'Dubai', 'Singapore', 'Amsterdam', 'Seoul', 'Mumbai', 'Bangkok', 'Istanbul', 'Rio de Janeiro', 'Cape Town'];
 
 function getWeather() {
     const city = cityInput.value;
@@ -10,12 +13,33 @@ function getWeather() {
             const currentCondition = data.current_condition[0];
             const weatherHtml = `
                 <h2>${data.nearest_area[0].areaName[0].value}, ${data.nearest_area[0].country[0].value}</h2>
-                <p>Temperature: ${currentCondition.temp_C}°C / ${currentCondition.temp_F}°F</p>
-                <p>Condition: ${currentCondition.weatherDesc[0].value}</p>
-                <p>Humidity: ${currentCondition.humidity}%</p>
-                <p>Wind: ${currentCondition.windspeedKmph} km/h</p>
+                <div class="temperature">${currentCondition.temp_C}°C</div>
+                <div class="condition">${currentCondition.weatherDesc[0].value}</div>
+                <div class="weather-details">
+                    <div>
+                        <i class="fas fa-wind"></i>
+                        <p>${currentCondition.windspeedKmph} km/h</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-tint"></i>
+                        <p>${currentCondition.humidity}%</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-cloud-rain"></i>
+                        <p>${currentCondition.precipMM} mm</p>
+                    </div>
+                </div>
             `;
             weatherInfo.innerHTML = weatherHtml;
+
+            const forecastHtml = data.weather.slice(0, 3).map(day => `
+                <div class="forecast-day">
+                    <div class="day">${new Date(day.date).toLocaleDateString('en-US', {weekday: 'short'})}</div>
+                    <i class="fas ${getWeatherIcon(day.hourly[4].weatherCode)}"></i>
+                    <div class="temp">${day.avgtempC}°C</div>
+                </div>
+            `).join('');
+            forecast.innerHTML = forecastHtml;
         })
         .catch(error => {
             weatherInfo.innerHTML = 'Error fetching weather data. Please try again.';
@@ -23,34 +47,84 @@ function getWeather() {
         });
 }
 
+function getWeatherIcon(code) {
+    // Map weather codes to Font Awesome icons
+    const iconMap = {
+        '113': 'fa-sun',
+        '116': 'fa-cloud-sun',
+        '119': 'fa-cloud',
+        '122': 'fa-cloud',
+        '143': 'fa-smog',
+        '176': 'fa-cloud-rain',
+        '179': 'fa-snowflake',
+        '182': 'fa-cloud-rain',
+        '185': 'fa-cloud-rain',
+        '200': 'fa-bolt',
+        '227': 'fa-snowflake',
+        '230': 'fa-snowflake',
+        '248': 'fa-fog',
+        '260': 'fa-fog',
+        '263': 'fa-cloud-rain',
+        '266': 'fa-cloud-rain',
+        '281': 'fa-cloud-rain',
+        '284': 'fa-cloud-rain',
+        '293': 'fa-cloud-rain',
+        '296': 'fa-cloud-rain',
+        '299': 'fa-cloud-showers-heavy',
+        '302': 'fa-cloud-showers-heavy',
+        '305': 'fa-cloud-showers-heavy',
+        '308': 'fa-cloud-showers-heavy',
+        '311': 'fa-cloud-rain',
+        '314': 'fa-cloud-rain',
+        '317': 'fa-cloud-rain',
+        '320': 'fa-cloud-rain',
+        '323': 'fa-snowflake',
+        '326': 'fa-snowflake',
+        '329': 'fa-snowflake',
+        '332': 'fa-snowflake',
+        '335': 'fa-snowflake',
+        '338': 'fa-snowflake',
+        '350': 'fa-snowflake',
+        '353': 'fa-cloud-rain',
+        '356': 'fa-cloud-showers-heavy',
+        '359': 'fa-cloud-showers-heavy',
+        '362': 'fa-cloud-rain',
+        '365': 'fa-cloud-rain',
+        '368': 'fa-snowflake',
+        '371': 'fa-snowflake',
+        '374': 'fa-cloud-rain',
+        '377': 'fa-cloud-rain',
+        '386': 'fa-bolt',
+        '389': 'fa-bolt',
+        '392': 'fa-snowflake',
+        '395': 'fa-snowflake'
+    };
+    return iconMap[code] || 'fa-question';
+}
+
 cityInput.addEventListener('input', debounce(autocompleteCity, 300));
 
 function autocompleteCity() {
-    const city = cityInput.value;
+    const input = cityInput.value.toLowerCase();
     const autocompleteList = document.getElementById('autocomplete-list') || createAutocompleteList();
     
-    if (city.length < 3) {
+    if (input.length < 2) {
         autocompleteList.innerHTML = '';
         return;
     }
 
-    fetch(`https://wttr.in/:cities/${city}`)
-        .then(response => response.text())
-        .then(data => {
-            const cities = data.split('\n').filter(Boolean);
-            autocompleteList.innerHTML = cities
-                .map(city => `<div>${city}</div>`)
-                .join('');
-            
-            autocompleteList.querySelectorAll('div').forEach(item => {
-                item.addEventListener('click', function() {
-                    cityInput.value = this.textContent;
-                    autocompleteList.innerHTML = '';
-                    getWeather();
-                });
-            });
-        })
-        .catch(error => console.error('Error:', error));
+    const matchedCities = cities.filter(city => city.toLowerCase().startsWith(input));
+    autocompleteList.innerHTML = matchedCities
+        .map(city => `<div>${city}</div>`)
+        .join('');
+    
+    autocompleteList.querySelectorAll('div').forEach(item => {
+        item.addEventListener('click', function() {
+            cityInput.value = this.textContent;
+            autocompleteList.innerHTML = '';
+            getWeather();
+        });
+    });
 }
 
 function createAutocompleteList() {
