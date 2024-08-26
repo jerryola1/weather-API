@@ -6,7 +6,7 @@
     <title>Modern Weather App</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
@@ -16,11 +16,15 @@
             <div class="autocomplete">
                 <input type="text" id="cityInput" placeholder="Enter city name">
             </div>
-            <button onclick="getWeather()"><i class="fas fa-search"></i></button>
+            <button onclick="getWeather()" class="search-button">
+                <i class="fas fa-search"></i>
+                <span>Get Weather</span>
+            </button>
         </div>
         <div id="weatherInfo" class="weather-card"></div>
         <div id="forecast" class="forecast"></div>
     </div>
     <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
