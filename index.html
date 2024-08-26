@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIDHER Weather App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>WIDHER.</h1>
+        <p class="subtitle">Brand new weather app that keeps you up to date</p>
+        <div class="search-container">
+            <div class="autocomplete">
+                <input type="text" id="cityInput" placeholder="Enter city name">
+            </div>
+            <button onclick="getWeather()">Get Weather</button>
+        </div>
+        <div id="weatherInfo" class="weather-card"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
