@@ -42,6 +42,7 @@ h1 {
 
 .autocomplete {
     position: relative;
+    display: inline-block;
 }
 
 input[type="text"] {
@@ -173,7 +174,9 @@ button:hover {
 
 .autocomplete-items {
     position: absolute;
-    border-radius: 0 0 10px 10px;
+    border: 0px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
     z-index: 99;
     top: 100%;
     left: 0;
@@ -185,13 +188,14 @@ button:hover {
 }
 
 .autocomplete-items div {
-    padding: 0.8rem;
+    padding: 10px;
     cursor: pointer;
-    border-bottom: 1px solid #2d3050;
+    background-color: #121111; 
+    border-bottom: 1px solid #d4d4d4; 
 }
 
 .autocomplete-items div:hover {
-    background-color: #2d3050;
+    background-color: #1b1919; 
 }
 
 @media (max-width: 480px) {

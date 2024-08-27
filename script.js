@@ -91,26 +91,44 @@ function autocompleteCity() {
 //         return;
 //     }
 
+//     console.log('Fetching cities for input:', input);
+
 //     fetch(`get_cities.php?input=${encodeURIComponent(input)}`)
-//         .then(response => response.json())
+//         .then(response => {
+//             if (!response.ok) {
+//                 throw new Error(`HTTP error! status: ${response.status}`);
+//             }
+//             return response.json();
+//         })
 //         .then(data => {
+//             console.log('Received data:', data);
 //             const cities = data.data || [];
 //             const autocompleteList = document.getElementById('autocomplete-list') || createAutocompleteList();
-//             autocompleteList.innerHTML = cities
-//                 .map(city => `<div>${city.name}, ${city.country}</div>`)
-//                 .join('');
             
-//             autocompleteList.querySelectorAll('div').forEach(item => {
-//                 item.addEventListener('click', function() {
-//                     cityInput.value = this.textContent.split(',')[0]; // Only use the city name
-//                     autocompleteList.innerHTML = '';
-//                     getWeather();
+//             if (cities.length === 0) {
+//                 autocompleteList.innerHTML = '<div>No cities found</div>';
+//             } else {
+//                 autocompleteList.innerHTML = cities
+//                     .map(city => `<div>${city.city}, ${city.country}</div>`)
+//                     .join('');
+                
+//                 autocompleteList.querySelectorAll('div').forEach(item => {
+//                     item.addEventListener('click', function() {
+//                         cityInput.value = this.textContent.split(',')[0].trim();
+//                         autocompleteList.innerHTML = '';
+//                         getWeather();
+//                     });
 //                 });
-//             });
+//             }
+//             autocompleteList.style.display = 'block';
 //         })
-//         .catch(error => console.error('Error:', error));
+//         .catch(error => {
+//             console.error('Error:', error);
+//             const autocompleteList = document.getElementById('autocomplete-list') || createAutocompleteList();
+//             autocompleteList.innerHTML = '<div>Error fetching cities</div>';
+//             autocompleteList.style.display = 'block';
+//         });
 // }
-
 
 function createAutocompleteList() {
     const list = document.createElement('div');
