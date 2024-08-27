@@ -20,7 +20,7 @@ A sleek and responsive weather application that provides current weather conditi
 ## Setup and Installation
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/modern-weather-app.git
+    git clone https://github.com/jerryola1/weather-API.git
     ```
 2. Navigate to the project directory:
     ```bash
