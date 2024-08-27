@@ -44,7 +44,7 @@ h1 {
 .autocomplete {
     position: relative;
     display: inline-block;
-    width: 100%;
+    width: 100%; /* Ensure full width */
 }
 
 .clear-input {
