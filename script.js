@@ -2,22 +2,6 @@ const cityInput = document.getElementById('cityInput');
 const weatherInfo = document.getElementById('weatherInfo');
 const forecast = document.getElementById('forecast');
 
-// Replace 'YOUR_RAPIDAPI_KEY' with your actual RapidAPI key
-const rapidApiKey = '502d9644d4msh828e69e3f9a20a2p1aac30jsn835d8cf4e62d';
-
-// const cities = [
-//     "New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Jose",
-//     "London", "Birmingham", "Leeds", "Glasgow", "Sheffield", "Bradford", "Liverpool", "Edinburgh", "Manchester", "Bristol",
-//     "Paris", "Marseille", "Lyon", "Toulouse", "Nice", "Nantes", "Strasbourg", "Montpellier", "Bordeaux", "Lille",
-//     "Tokyo", "Yokohama", "Osaka", "Nagoya", "Sapporo", "Fukuoka", "Kobe", "Kawasaki", "Kyoto", "Saitama",
-//     "Beijing", "Shanghai", "Guangzhou", "Shenzhen", "Chengdu", "Tianjin", "Xi'an", "Chongqing", "Hangzhou", "Nanjing",
-//     "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Ahmedabad", "Chennai", "Kolkata", "Surat", "Pune", "Jaipur",
-//     "São Paulo", "Rio de Janeiro", "Salvador", "Brasília", "Fortaleza", "Belo Horizonte", "Manaus", "Curitiba", "Recife", "Porto Alegre",
-//     "Mexico City", "Guadalajara", "Monterrey", "Puebla", "Tijuana", "León", "Juárez", "Zapopan", "Mérida", "Cancún",
-//     "Cairo", "Alexandria", "Giza", "Shubra El Kheima", "Port Said", "Suez", "Luxor", "Mansoura", "Tanta", "Asyut",
-//     "Lagos", "Kano", "Ibadan", "Kaduna", "Port Harcourt", "Benin City", "Maiduguri", "Zaria", "Aba", "Jos"
-// ];
-
 function getWeather() {
     const city = cityInput.value;
     
@@ -61,33 +45,28 @@ function getWeather() {
         });
 }
 
-function getWeatherIcon(code) {
-    // Weather icon mapping remains the same
-    // ...
-}
-
 cityInput.addEventListener('input', debounce(autocompleteCity, 300));
 
 function autocompleteCity() {
-    const input = cityInput.value;
-    if (input.length < 3) {
+    const input = cityInput.value.toLowerCase();
+    if (input.length < 2) {
+        const autocompleteList = document.getElementById('autocomplete-list');
+        if (autocompleteList) {
+            autocompleteList.innerHTML = '';
+        }
         return;
     }
 
-    const url = `https://wft-geo-db.p.rapidapi.com/v1/geo/cities?namePrefix=${input}&limit=5&sort=-population`;
-    const options = {
-        method: 'GET',
-        headers: {
-            'X-RapidAPI-Key': rapidApiKey,
-            'X-RapidAPI-Host': 'wft-geo-db.p.rapidapi.com'
-        }
-    };
-
-    fetch(url, options)
+    fetch('cities.json')
         .then(response => response.json())
-        .then(data => {
+        .then(cities => {
+            const matchedCities = cities.filter(city => 
+                city.name.toLowerCase().includes(input) || 
+                city.country.toLowerCase().includes(input)
+            ).slice(0, 5);
+
             const autocompleteList = document.getElementById('autocomplete-list') || createAutocompleteList();
-            autocompleteList.innerHTML = data.data
+            autocompleteList.innerHTML = matchedCities
                 .map(city => `<div>${city.name}, ${city.country}</div>`)
                 .join('');
             
@@ -101,6 +80,37 @@ function autocompleteCity() {
         })
         .catch(error => console.error('Error:', error));
 }
+
+// function autocompleteCity() {
+//     const input = cityInput.value.toLowerCase();
+//     if (input.length < 2) {
+//         const autocompleteList = document.getElementById('autocomplete-list');
+//         if (autocompleteList) {
+//             autocompleteList.innerHTML = '';
+//         }
+//         return;
+//     }
+
+//     fetch(`get_cities.php?input=${encodeURIComponent(input)}`)
+//         .then(response => response.json())
+//         .then(data => {
+//             const cities = data.data || [];
+//             const autocompleteList = document.getElementById('autocomplete-list') || createAutocompleteList();
+//             autocompleteList.innerHTML = cities
+//                 .map(city => `<div>${city.name}, ${city.country}</div>`)
+//                 .join('');
+            
+//             autocompleteList.querySelectorAll('div').forEach(item => {
+//                 item.addEventListener('click', function() {
+//                     cityInput.value = this.textContent.split(',')[0]; // Only use the city name
+//                     autocompleteList.innerHTML = '';
+//                     getWeather();
+//                 });
+//             });
+//         })
+//         .catch(error => console.error('Error:', error));
+// }
+
 
 function createAutocompleteList() {
     const list = document.createElement('div');
@@ -130,3 +140,60 @@ cityInput.addEventListener('keypress', function(e) {
         getWeather();
     }
 });
+
+function getWeatherIcon(code) {
+    const iconMap = {
+        '113': 'fa-sun',
+        '116': 'fa-cloud-sun',
+        '119': 'fa-cloud',
+        '122': 'fa-cloud',
+        '143': 'fa-smog',
+        '176': 'fa-cloud-rain',
+        '179': 'fa-snowflake',
+        '182': 'fa-cloud-rain',
+        '185': 'fa-cloud-rain',
+        '200': 'fa-bolt',
+        '227': 'fa-snowflake',
+        '230': 'fa-snowflake',
+        '248': 'fa-fog',
+        '260': 'fa-fog',
+        '263': 'fa-cloud-rain',
+        '266': 'fa-cloud-rain',
+        '281': 'fa-cloud-rain',
+        '284': 'fa-cloud-rain',
+        '293': 'fa-cloud-rain',
+        '296': 'fa-cloud-rain',
+        '299': 'fa-cloud-showers-heavy',
+        '302': 'fa-cloud-showers-heavy',
+        '305': 'fa-cloud-showers-heavy',
+        '308': 'fa-cloud-showers-heavy',
+        '311': 'fa-cloud-rain',
+        '314': 'fa-cloud-rain',
+        '317': 'fa-cloud-rain',
+        '320': 'fa-cloud-rain',
+        '323': 'fa-snowflake',
+        '326': 'fa-snowflake',
+        '329': 'fa-snowflake',
+        '332': 'fa-snowflake',
+        '335': 'fa-snowflake',
+        '338': 'fa-snowflake',
+        '350': 'fa-snowflake',
+        '353': 'fa-cloud-rain',
+        '356': 'fa-cloud-showers-heavy',
+        '359': 'fa-cloud-showers-heavy',
+        '362': 'fa-cloud-rain',
+        '365': 'fa-cloud-rain',
+        '368': 'fa-snowflake',
+        '371': 'fa-snowflake',
+        '374': 'fa-cloud-rain',
+        '377': 'fa-cloud-rain',
+        '386': 'fa-bolt',
+        '389': 'fa-bolt',
+        '392': 'fa-snowflake',
+        '395': 'fa-snowflake'
+    };
+    return iconMap[code] || 'fa-question';
+}
+
+// Add event listener to the search button
+document.querySelector('.search-button').addEventListener('click', getWeather);
