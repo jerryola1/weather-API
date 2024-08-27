@@ -57,6 +57,8 @@ function autocompleteCity() {
         return;
     }
 
+    console.log('Fetching cities for input:', input);
+
     fetch('cities.json')
         .then(response => response.json())
         .then(cities => {
@@ -65,33 +67,65 @@ function autocompleteCity() {
                 city.country.toLowerCase().includes(input)
             ).slice(0, 5);
 
+            console.log('Matched cities:', matchedCities);
+
             const autocompleteList = document.getElementById('autocomplete-list') || createAutocompleteList();
-            autocompleteList.innerHTML = matchedCities
-                .map(city => `<div>${city.name}, ${city.country}</div>`)
-                .join('');
             
-            autocompleteList.querySelectorAll('div').forEach(item => {
-                item.addEventListener('click', function() {
-                    cityInput.value = this.textContent.split(',')[0]; // Only use the city name
-                    autocompleteList.innerHTML = '';
-                    getWeather();
+            if (matchedCities.length === 0) {
+                autocompleteList.innerHTML = '<div>No cities found</div>';
+            } else {
+                autocompleteList.innerHTML = matchedCities
+                    .map((city, index) => `<div data-index="${index}">${city.name}, ${city.country}</div>`)
+                    .join('');
+                
+                autocompleteList.querySelectorAll('div').forEach(item => {
+                    item.addEventListener('click', function() {
+                        cityInput.value = this.textContent.split(',')[0].trim();
+                        autocompleteList.innerHTML = '';
+                        getWeather();
+                    });
                 });
-            });
+            }
+            autocompleteList.style.display = 'block';
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error);
+            const autocompleteList = document.getElementById('autocomplete-list') || createAutocompleteList();
+            autocompleteList.innerHTML = '<div>Error fetching cities</div>';
+            autocompleteList.style.display = 'block';
+        });
 }
 
-// function autocompleteCity() {
-//     const input = cityInput.value.toLowerCase();
-//     if (input.length < 2) {
-//         const autocompleteList = document.getElementById('autocomplete-list');
-//         if (autocompleteList) {
-//             autocompleteList.innerHTML = '';
-//         }
-//         return;
-//     }
+cityInput.addEventListener('keydown', function(e) {
+    const autocompleteList = document.getElementById('autocomplete-list');
+    if (autocompleteList) {
+        const items = autocompleteList.getElementsByTagName('div');
+        if (e.keyCode == 40) {
+            // Arrow DOWN
+            currentFocus++;
+            addActive(items);
+        } else if (e.keyCode == 38) {
+            // Arrow UP
+            currentFocus--;
+            addActive(items);
+        } else if (e.keyCode == 13) {
+            // ENTER key
+            e.preventDefault();
+            if (currentFocus > -1) {
+                if (items) items[currentFocus].click();
+            }
+        }
+    }
+});
 
-//     console.log('Fetching cities for input:', input);
+function addActive(items) {
+    if (!items) return false;
+    removeActive(items);
+    if (currentFocus >= items.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (items.length - 1);
+    items[currentFocus].classList.add('autocomplete-active');
+    cityInput.value = items[currentFocus].textContent.split(',')[0].trim();
+}
 
 //     fetch(`get_cities.php?input=${encodeURIComponent(input)}`)
 //         .then(response => {
@@ -130,6 +164,7 @@ function autocompleteCity() {
 //         });
 // }
 
+// Make sure this function exists and is correctly implemented
 function createAutocompleteList() {
     const list = document.createElement('div');
     list.id = 'autocomplete-list';
@@ -215,3 +250,10 @@ function getWeatherIcon(code) {
 
 // Add event listener to the search button
 document.querySelector('.search-button').addEventListener('click', getWeather);
+
+const clearInput = document.getElementById('clearInput');
+
+clearInput.addEventListener('click', function() {
+    cityInput.value = '';
+    cityInput.focus();
+});
